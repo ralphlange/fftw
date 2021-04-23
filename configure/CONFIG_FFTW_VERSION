@@ -1,0 +1,12 @@
+# Version number for the FFTW Support
+
+EPICS_FFTW_MAJOR_VERSION = 0
+EPICS_FFTW_MINOR_VERSION = 1
+EPICS_FFTW_MAINTENANCE_VERSION = 0
+
+# Development flag, set to zero for release versions
+
+EPICS_FFTW_DEVELOPMENT_FLAG = 1
+
+# Immediately after a release the MAINTENANCE_VERSION
+# will be incremented and the DEVELOPMENT_FLAG set to 1

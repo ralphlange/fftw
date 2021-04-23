@@ -1,0 +1,17 @@
+# single setup for FFT
+
+record (aao, "$(P)$(R)inp-real") {
+  field(DTYP, "FFTW")
+  field(OUT, "@$(P) input-real trigger=y")
+  field(FTVL, "DOUBLE")
+  field(NELM, "128")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-magn") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-magn")
+  field(FTVL, "DOUBLE")
+  field(NELM, "65")
+  field(TPRO, "15")
+}

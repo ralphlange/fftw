@@ -1,12 +1,15 @@
-Copyright (c) 2018 ITER Organization. All rights reserved.
+Copyright (c) 2015 Brookhaven Science Assoc. as operator of
+    Brookhaven National Laboratory.
+Copyright (c) 2021 ITER Organization.
+All rights reserved.
 
-EPICS Device Support for OPC UA is distributed subject to the following
+EPICS Device Support for FFTW is distributed subject to the following
 license conditions:
 
  SOFTWARE LICENSE AGREEMENT
- Software: EPICS Device Support for OPC UA
+ Software: EPICS Device Support for FFTW
 
- 1. The "Software", below, refers to EPICS Device Support for OPC UA (in
+ 1. The "Software", below, refers to EPICS Device Support for FFTW (in
     either source code, or binary form and accompanying documentation).
     Each licensee is addressed as "you" or "Licensee."
 

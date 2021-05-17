@@ -100,5 +100,5 @@ FFTWConnector::createEmptyOutputValue(void **bptr, epicsUInt32 nelm)
 void
 FFTWConnector::trigger()
 {
-
+    inst->trigger();
 }

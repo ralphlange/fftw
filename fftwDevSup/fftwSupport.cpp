@@ -220,7 +220,7 @@ FFTWConnector *
 parseLink(dbCommon *prec, const DBEntry &ent)
 {
     DBLINK *link = ent.getDevLink();
-    std::unique_ptr<FFTWConnector> conn (new FFTWConnector);
+    std::unique_ptr<FFTWConnector> conn (new FFTWConnector(prec));
 
     if (link->type != INST_IO)
         throw std::logic_error("link is not INST_IO");
@@ -228,8 +228,6 @@ parseLink(dbCommon *prec, const DBEntry &ent)
     if (prec->tpro > 10)
         std::cerr << prec->name << ": parsing link '" << link->value.instio.string << "'"
                   << std::endl;
-
-    conn->prec = prec;
 
     std::vector<std::string> tokens = splitString(link->value.instio.string, ' ');
 

@@ -32,7 +32,7 @@ class FFTWInstance;
 class FFTWConnector
 {
 public:
-    FFTWConnector();
+    FFTWConnector(dbCommon *prec);
 
     enum SignalType {
         None = 0,

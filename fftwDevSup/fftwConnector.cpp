@@ -23,8 +23,9 @@
 #include "fftwInstance.h"
 #include "fftwConnector.h"
 
-FFTWConnector::FFTWConnector()
+FFTWConnector::FFTWConnector(dbCommon *prec)
     : inst(nullptr)
+    , prec(prec)
     , sigtype(None)
 {}
 

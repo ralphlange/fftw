@@ -475,7 +475,9 @@ read_double(REC *prec)
 {
     TRY
     {
+        long status = 0;
         bool failed = true;
+
         if (conn->sigtype == FFTWConnector::ExecutionTime) {
             double val = analogRaw2EGU<double>(prec, conn->inst->lasttime);
             prec->val = val;
@@ -484,13 +486,14 @@ read_double(REC *prec)
             if (prec->tse == -2)
                 prec->time = conn->inst->timeout;
 
-            return 2;
+            status = 2;
+            failed = false;
         }
         if (failed) {
             (void) recGblSetSevr(prec, READ_ALARM, INVALID_ALARM);
             return S_dev_badRequest;
         }
-        return 0;
+        return status;
     }
     CATCH(__FUNCTION__)
 }

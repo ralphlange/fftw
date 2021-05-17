@@ -32,6 +32,8 @@ static epicsMutex fftwplanlock;
 FFTWCalc::FFTWCalc()
     : wintype(None)
     , input_sz(0)
+    , ntime(0)
+    , nfreq(0)
     , fsamp(0.0)
     , redo_plan(true)
     , newval(true)

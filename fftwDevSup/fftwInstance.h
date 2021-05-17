@@ -75,8 +75,8 @@ struct FFTWThreadPool
 {
     FFTWThreadPool();
     ~FFTWThreadPool();
-    static epicsThreadPool *pool;
-    static epicsThreadPoolConfig poolConfig;
+    epicsThreadPool *pool;
+    epicsThreadPoolConfig poolConfig;
 };
 
 class FFTWInstance

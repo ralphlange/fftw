@@ -37,9 +37,7 @@ int clock_gettime(int, struct timespec *spec)      //C-file part
 #endif
 
 std::vector<FFTWInstance *> FFTWInstance::instances;
-
-epicsThreadPool *FFTWThreadPool::pool;
-epicsThreadPoolConfig FFTWThreadPool::poolConfig;
+FFTWThreadPool FFTWInstance::workers;
 
 FFTWThreadPool::FFTWThreadPool()
 {
@@ -159,13 +157,16 @@ FFTWInstance::calculate()
 void
 FFTWInstance::trigger()
 {
+    if (triggerSrc && triggerSrc->prec->tpro > 5)
+        std::cerr << "Queueing calculation job for " << name << std::endl;
     epicsJobQueue(job);
 }
 
 void
 FFTWInstance::show(const unsigned int verbosity) const
 {
-    std::cout << "Instance " << name << "\nConnected records:";
+    std::cout << "Instance " << name << " using job " << job << " of pool " << workers.pool
+              << "\nConnected records:";
     for (auto &conn : inputs) {
         std::cout << "\n  " << FFTWConnector::SignalTypeName(conn->sigtype) << ": "
                   << conn->prec->name;
@@ -209,5 +210,7 @@ FFTWInstance::calcJob(void *arg, epicsJobMode mode)
         epicsJobDestroy(instance->job);
         return;
     }
+    if (FFTWDebug)
+        std::cerr << "Running calculation for instance " << instance->name << std::endl;
     instance->calculate();
 }

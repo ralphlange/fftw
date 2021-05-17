@@ -381,8 +381,6 @@ long
 init_record_write_arr(REC *prec)
 {
     long status = init_record<REC>(prec);
-    if (!status)
-        status = 2;
 
     if (prec->ftvl != menuFtypeDOUBLE)
         throw std::runtime_error("Unsupported FTVL");

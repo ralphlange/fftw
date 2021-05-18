@@ -8,10 +8,38 @@ record (aao, "$(P)$(R)inp-real") {
   field(TPRO, "15")
 }
 
-record (aai, "$(P)$(R)out-magn") {
+record (aai, "$(P)$(R)out-real") {
   field(DTYP, "FFTW")
-  field(INP, "@$(P) output-magn")
+  field(INP, "@$(P) output-real")
   field(FTVL, "DOUBLE")
   field(NELM, "65")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-imag") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-imag")
+  field(FTVL, "DOUBLE")
+  field(NELM, "65")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)fscale") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-fscale")
+  field(FTVL, "DOUBLE")
+  field(NELM, "65")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)window") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-window")
+  field(FTVL, "DOUBLE")
+  field(NELM, "128")
+  field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }

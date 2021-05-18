@@ -36,17 +36,16 @@ FFTWConnector::get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io)
     case OutputReal:
     case OutputImag:
     case OutputMagn:
-    case OutputPhas: {
-        Guard(inst->lock);
+    case OutputPhas:
         *io = inst->valueScan;
         return 0;
-    }
     case OutputFscale:
-    case OutputWindow: {
         Guard(inst->lock);
         *io = inst->scaleScan;
         return 0;
-    }
+    case OutputWindow:
+        *io = inst->windowScan;
+        return 0;
     default:
         return 1;
     }

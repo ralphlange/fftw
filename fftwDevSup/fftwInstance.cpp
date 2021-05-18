@@ -58,6 +58,7 @@ FFTWInstance::FFTWInstance(const std::string &name)
 {
     scanIoInit(&valueScan);
     scanIoInit(&scaleScan);
+    scanIoInit(&windowScan);
     instances.push_back(this);
     job = epicsJobCreate(workers.pool, calcJob, this);
     assert(job != nullptr);
@@ -74,7 +75,7 @@ FFTWInstance::calculate()
         }
     }
 
-    fftw.apply_window();
+    bool window_changed = fftw.apply_window();
     runtime.maybeSnap("calculate() prepare", 5e-3);
 
     bool fscale_changed = fftw.replan();
@@ -83,10 +84,18 @@ FFTWInstance::calculate()
     fftw.transform();
     runtime.maybeSnap("calculate() execute", 3e-3);
 
+    valid = true;
+    if (fftw.output.size() == 0 || fftw.window.size() == 0 || fftw.fscale.size() == 0)
+        valid = false;
+
     double *outr = nullptr;
     double *outi = nullptr;
     double *outm = nullptr;
     double *outp = nullptr;
+    double *outf = nullptr;
+    double *getf = nullptr;
+    double *outw = nullptr;
+    double *getw = nullptr;
 
     if (useReal) {
         outReal = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
@@ -106,6 +115,8 @@ FFTWInstance::calculate()
     }
     if (useFscale && fscale_changed) {
         outFscale = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outf = outFscale->data();
+        getf = fftw.fscale.data();
     }
 
     for (size_t i = 0; i < fftw.nfreq; i++) {
@@ -120,8 +131,18 @@ FFTWInstance::calculate()
             outm[i] = 20. * log(sqrt(creal(out) * creal(out) + cimag(out) * cimag(out)));
         if (usePhas)
             outp[i] = atan(cimag(out) / creal(out));
+        if (useFscale && fscale_changed)
+            outf[i] = getf[i];
 #undef creal
 #undef cimag
+    }
+
+    if (useWindow && window_changed) {
+        outWindow = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.ntime));
+        outw = outWindow->data();
+        getw = fftw.window.data();
+        for (size_t i = 0; i < fftw.ntime; i++)
+            outw[i] = getw[i];
     }
 
     runtime.maybeSnap("calculate() post-proc", 1e-3);
@@ -140,10 +161,24 @@ FFTWInstance::calculate()
         case FFTWConnector::OutputPhas:
             conn->setNextOutputValue(std::move(outPhas));
             break;
+        case FFTWConnector::OutputFscale:
+            if (fscale_changed)
+                conn->setNextOutputValue(std::move(outFscale));
+            break;
+        case FFTWConnector::OutputWindow:
+            if (window_changed)
+                conn->setNextOutputValue(std::move(outWindow));
+            break;
         default:
             break;
         }
     }
+
+    scanIoRequest(valueScan);
+    if (fscale_changed)
+        scanIoRequest(scaleScan);
+    if (window_changed)
+        scanIoRequest(windowScan);
 }
 
 void

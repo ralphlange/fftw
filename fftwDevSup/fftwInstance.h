@@ -99,7 +99,7 @@ public:
 
     FFTWCalc fftw;
 
-    IOSCANPVT valueScan, scaleScan;
+    IOSCANPVT valueScan, scaleScan, windowScan;
 
     void trigger();
 

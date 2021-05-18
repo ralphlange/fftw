@@ -35,6 +35,7 @@
 #include <menuFtype.h>
 
 #include <mbboRecord.h>
+#include <aoRecord.h>
 #include <aiRecord.h>
 #include <aaoRecord.h>
 #include <aaiRecord.h>
@@ -159,6 +160,8 @@ signalTypeIndex(const std::string &name)
         return FFTWConnector::InputReal;
     else if (name == "windowtype")
         return FFTWConnector::SetWindowType;
+    else if (name == "sample-freq")
+        return FFTWConnector::SetSampleFreq;
     else if (name == "exectime")
         return FFTWConnector::ExecutionTime;
     else if (name == "output-real")
@@ -244,6 +247,9 @@ parseLink(dbCommon *prec, const DBEntry &ent)
                 conn->sigtype = sig;
                 switch (sig) {
                 case FFTWConnector::InputReal:
+                    conn->inst->inputs.push_back(conn.get());
+                    break;
+                case FFTWConnector::SetSampleFreq:
                     conn->inst->inputs.push_back(conn.get());
                     break;
                 case FFTWConnector::OutputReal:
@@ -442,6 +448,28 @@ write_enum(REC *prec)
 
 template<typename REC>
 long
+write_double(REC *prec)
+{
+    TRY
+    {
+        bool failed = true;
+        if (conn->sigtype == FFTWConnector::SetSampleFreq) {
+            failed = false;
+            conn->fsample = analogEGU2Raw<double>(prec, prec->val);
+            if (prec->tpro > 1)
+                std::cerr << prec->name << ": set sample freq " << conn->fsample << std::endl;
+        }
+        if (failed) {
+            (void) recGblSetSevr(prec, WRITE_ALARM, INVALID_ALARM);
+            return S_dev_badRequest;
+        }
+        return 0;
+    }
+    CATCH(__FUNCTION__)
+}
+
+template<typename REC>
+long
 write_double_arr(REC *prec)
 {
     TRY
@@ -536,6 +564,7 @@ read_double_arr(REC *prec)
 
 //      devsup name, record,      init, get_iointr, value type, direction
 DEVSUPI(devMBBOfftw,   mbbo,      mask,    nullptr,       enum,     write)
+DEVSUPN(  devAOfftw,     ao,            get_iointr,     double,     write)
 DEVSUPN(  devAIfftw,     ai,            get_iointr,     double,      read)
 DEVSUPI( devAAOfftw,    aao, write_arr, get_iointr, double_arr,     write)
 DEVSUPI( devAAIfftw,    aai,  read_arr, get_iointr, double_arr,      read)
@@ -546,6 +575,7 @@ DEVSUPI( devAAIfftw,    aai,  read_arr, get_iointr, double_arr,      read)
 
 extern "C" {
     epicsExportAddress(dset, devMBBOfftw);
+    epicsExportAddress(dset, devAOfftw);
     epicsExportAddress(dset, devAIfftw);
     epicsExportAddress(dset, devAAOfftw);
     epicsExportAddress(dset, devAAIfftw);

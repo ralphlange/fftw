@@ -72,6 +72,8 @@ FFTWInstance::calculate()
     for (auto conn : inputs) {
         if (conn->sigtype == FFTWConnector::InputReal) {
             fftw.set_input(conn->getNextInputValue());
+        } else if (conn->sigtype == FFTWConnector::SetSampleFreq) {
+            fftw.set_fsamp(conn->fsample);
         }
     }
 

@@ -37,6 +37,7 @@ public:
     enum SignalType {
         None = 0,
         SetWindowType,
+        SetSampleFreq,
         ExecutionTime,
         InputReal,
         OutputReal,
@@ -58,6 +59,8 @@ public:
             return "None";
         case SetWindowType:
             return "SetWindowType";
+        case SetSampleFreq:
+            return "SetSampleFreq";
         case ExecutionTime:
             return "ExecutionTime";
         case InputReal:
@@ -83,6 +86,7 @@ public:
 
     SignalType sigtype;
     TransformType trftype;
+    double fsample;
 
     long get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io);
 
@@ -105,6 +109,13 @@ public:
     //     must be called under the record lock
     //     called from record initialization
     void createEmptyOutputValue(void **bptr, epicsUInt32 nelm);
+
+    // Get the sampling frequency
+    double
+    getSampleFreq()
+    {
+        return fsample;
+    }
 
     // Trigger the next transform
     void trigger();

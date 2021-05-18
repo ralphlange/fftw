@@ -1,6 +1,7 @@
 # FFT Calculation using the FFTW3 library
 
 device(mbbo, INST_IO, devMBBOfftw, "FFTW")
+device(ao, INST_IO, devAOfftw, "FFTW")
 device(ai, INST_IO, devAIfftw, "FFTW")
 device(aao, INST_IO, devAAOfftw, "FFTW")
 device(aai, INST_IO, devAAIfftw, "FFTW")

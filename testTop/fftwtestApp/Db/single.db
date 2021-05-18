@@ -1,5 +1,12 @@
 # single setup for FFT
 
+record (ao, "$(P)$(R)fsample") {
+  field(DTYP, "FFTW")
+  field(OUT, "@$(P) sample-freq")
+  field(VAL, "1e3")
+  field(PINI, "YES")
+}
+
 record (aao, "$(P)$(R)inp-real") {
   field(DTYP, "FFTW")
   field(OUT, "@$(P) input-real trigger=y")

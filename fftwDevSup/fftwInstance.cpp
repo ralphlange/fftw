@@ -74,14 +74,6 @@ FFTWInstance::calculate()
         }
     }
 
-    // number of time samples
-    size_t ntime = fftw.input_sz;
-    // number of frequency samples
-    size_t nfreq = ntime / 2 + 1;
-
-    assert(ntime > 0);
-    assert(nfreq > 0);
-
     fftw.apply_window();
     runtime.maybeSnap("calculate() prepare", 5e-3);
 
@@ -97,26 +89,26 @@ FFTWInstance::calculate()
     double *outp = nullptr;
 
     if (useReal) {
-        outReal = std::unique_ptr<std::vector<double>>(new std::vector<double>(nfreq));
+        outReal = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
         outr = outReal->data();
     }
     if (useImag) {
-        outImag = std::unique_ptr<std::vector<double>>(new std::vector<double>(nfreq));
+        outImag = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
         outi = outImag->data();
     }
     if (useMagn) {
-        outMagn = std::unique_ptr<std::vector<double>>(new std::vector<double>(nfreq));
+        outMagn = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
         outm = outMagn->data();
     }
     if (usePhas) {
-        outPhas = std::unique_ptr<std::vector<double>>(new std::vector<double>(nfreq));
+        outPhas = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
         outp = outPhas->data();
     }
     if (useFscale && fscale_changed) {
-        outFscale = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.fscale));
+        outFscale = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
     }
 
-    for (size_t i = 1; i < nfreq; i++) {
+    for (size_t i = 0; i < fftw.nfreq; i++) {
         fftw_complex &out = fftw.output[i];
 #define creal(C) C[0]
 #define cimag(C) C[1]

@@ -59,9 +59,9 @@ FFTWCalc::set_input(std::unique_ptr<std::vector<double, FFTWAllocator<double>>> 
     newval = true;
 
     // number of time samples
-    size_t ntime = input->size();
+    ntime = input->size();
     // number of frequency samples
-    size_t nfreq = ntime / 2 + 1;
+    nfreq = ntime / 2 + 1;
 
     assert(ntime > 0);
     assert(nfreq > 0);

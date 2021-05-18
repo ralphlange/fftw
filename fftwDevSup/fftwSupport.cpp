@@ -247,8 +247,7 @@ parseLink(dbCommon *prec, const DBEntry &ent)
                 conn->sigtype = sig;
                 switch (sig) {
                 case FFTWConnector::InputReal:
-                    conn->inst->inputs.push_back(conn.get());
-                    break;
+                case FFTWConnector::SetWindowType:
                 case FFTWConnector::SetSampleFreq:
                     conn->inst->inputs.push_back(conn.get());
                     break;
@@ -430,7 +429,7 @@ write_enum(REC *prec)
             case FFTWCalc::None:
             case FFTWCalc::Hann:
                 failed = false;
-                conn->inst->fftw.wintype = static_cast<FFTWCalc::WindowType>(prec->rval);
+                conn->wintype = static_cast<FFTWCalc::WindowType>(prec->rval);
                 if (prec->tpro > 1)
                     std::cerr << prec->name << ": set window type " << conn->inst->fftw.wintype
                               << std::endl;

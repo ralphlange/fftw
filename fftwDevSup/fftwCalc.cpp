@@ -52,6 +52,16 @@ FFTWCalc::set_fsamp(double f)
 }
 
 void
+FFTWCalc::set_wtype(FFTWCalc::WindowType type)
+{
+    bool changed = wintype != type;
+    if (changed) {
+        wintype = type;
+        redo_plan = true; // strictly speaking not needed
+    }
+}
+
+void
 FFTWCalc::set_input_real(std::unique_ptr<std::vector<double, FFTWAllocator<double>>> inp)
 {
     input = std::move(inp);

@@ -123,8 +123,6 @@ struct FFTWCalc
             return "None";
         case Hann:
             return "Hann";
-        default:
-            break;
         }
         return "?";
     }

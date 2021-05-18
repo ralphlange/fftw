@@ -1,5 +1,16 @@
 # single setup for FFT
 
+record (mbbo, "$(P)$(R)wintype") {
+  field(DTYP, "FFTW")
+  field(OUT, "@$(P) windowtype")
+  field(ZRST, "None")
+  field(ZRVL, "0")
+  field(ONST, "Hann")
+  field(ONVL, "1")
+  field(VAL, "1")
+  field(PINI, "YES")
+}
+
 record (ao, "$(P)$(R)fsample") {
   field(DTYP, "FFTW")
   field(OUT, "@$(P) sample-freq")

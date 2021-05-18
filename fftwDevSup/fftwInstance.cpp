@@ -70,10 +70,18 @@ FFTWInstance::calculate()
     PTimer runtime;
 
     for (auto conn : inputs) {
-        if (conn->sigtype == FFTWConnector::InputReal) {
+        switch (conn->sigtype) {
+        case FFTWConnector::InputReal:
             fftw.set_input_real(conn->getNextInputValue());
-        } else if (conn->sigtype == FFTWConnector::SetSampleFreq) {
+            break;
+        case FFTWConnector::SetSampleFreq:
             fftw.set_fsamp(conn->fsample);
+            break;
+        case FFTWConnector::SetWindowType:
+            fftw.set_wtype(conn->wintype);
+            break;
+        default:
+            break;
         }
     }
 

@@ -85,6 +85,7 @@ public:
     dbCommon *prec;
 
     SignalType sigtype;
+    FFTWCalc::WindowType wintype;
     TransformType trftype;
     double fsample;
 
@@ -113,6 +114,9 @@ public:
 
     // Get the sampling frequency
     double getSampleFreq();
+
+    // Get the window type
+    FFTWCalc::WindowType getWindowType();
 
     // Trigger the next transform
     void trigger();

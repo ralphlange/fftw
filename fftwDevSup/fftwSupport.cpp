@@ -500,20 +500,14 @@ read_double_arr(REC *prec)
 {
     TRY
     {
-        bool failed = true;
         CHKVALID
 
         conn->getNextOutputValue(&prec->bptr, prec->nelm, &prec->nord);
-        if (conn->sigtype == FFTWConnector::OutputFscale) {
-            prec->udf = 0;
+        prec->udf = 0;
 
-            if (prec->tse == -2)
-                prec->time = conn->inst->timeout;
+        if (prec->tse == -2)
+            prec->time = conn->inst->timeout;
 
-            return 2;
-        }
-        if (failed)
-            (void) recGblSetSevr(prec, READ_ALARM, INVALID_ALARM);
         return 0;
     }
     CATCH(__FUNCTION__)

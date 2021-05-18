@@ -52,12 +52,12 @@ FFTWConnector::get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io)
 }
 
 void
-FFTWConnector::setNextInputValue(void *bptr, epicsUInt32 nelm)
+FFTWConnector::setNextInputValue(void *bptr, epicsUInt32 elements)
 {
-    std::unique_ptr<std::vector<double, FFTWAllocator<double>>> vec(new std::vector<double, FFTWAllocator<double>>(nelm));
+    std::unique_ptr<std::vector<double, FFTWAllocator<double>>> vec(new std::vector<double, FFTWAllocator<double>>());
 
     const double *src = static_cast<double *>(bptr);
-    vec->insert(vec->end(), src, src + nelm);
+    vec->insert(vec->end(), src, src + elements);
     next_inp = std::move(vec);
 }
 
@@ -84,7 +84,7 @@ FFTWConnector::getNextOutputValue(void **bptr, epicsUInt32 nelm, epicsUInt32 *no
         } else {
             *nord = nelm;
         }
-        *bptr = next_out.get();
+        *bptr = next_out.get()->data();
         curr_out = std::move(next_out);
     }
 }
@@ -94,7 +94,7 @@ FFTWConnector::createEmptyOutputValue(void **bptr, epicsUInt32 nelm)
 {
     std::unique_ptr<std::vector<double>> vec(new std::vector<double>(nelm));
     curr_out = std::move(vec);
-    *bptr = curr_out.get();
+    *bptr = curr_out.get()->data();
 }
 
 void

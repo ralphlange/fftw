@@ -97,6 +97,16 @@ FFTWConnector::createEmptyOutputValue(void **bptr, epicsUInt32 nelm)
     *bptr = curr_out.get()->data();
 }
 
+double FFTWConnector::getSampleFreq()
+{
+    return fsample;
+}
+
+FFTWCalc::WindowType FFTWConnector::getWindowType()
+{
+    return wintype;
+}
+
 void
 FFTWConnector::trigger()
 {

@@ -90,32 +90,29 @@ public:
 
     long get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io);
 
-    // Copy value into connector (next)
-    //     must be called under the record lock
+    // Record side interface
     //     called from record processing
-    void setNextInputValue(void *bptr, epicsUInt32 nelm);
-    // Move value from connector into instance
-    //     called from the FFTW Instance
-    std::unique_ptr<std::vector<double, FFTWAllocator<double>>> getNextInputValue();
+    //     holds record lock
 
-    // Move value into connector (next)
-    //     called from the FFTW Instance
-    void setNextOutputValue(std::unique_ptr<std::vector<double>> value);
+    // Copy value into connector (next)
+    void setNextInputValue(void *bptr, epicsUInt32 nelm);
+
     // Move value from connector into record
-    //     must be called under the record lock
-    //     called from record processing
     void getNextOutputValue(void **bptr, epicsUInt32 nelm, epicsUInt32 *nord);
+
     // Create new value and move into record
-    //     must be called under the record lock
-    //     called from record initialization
     void createEmptyOutputValue(void **bptr, epicsUInt32 nelm);
 
+    // FFTW instance side interface
+
+    // Move value from connector into instance
+    std::unique_ptr<std::vector<double, FFTWAllocator<double>>> getNextInputValue();
+
+    // Move value from instance into connector (next)
+    void setNextOutputValue(std::unique_ptr<std::vector<double>> value);
+
     // Get the sampling frequency
-    double
-    getSampleFreq()
-    {
-        return fsample;
-    }
+    double getSampleFreq();
 
     // Trigger the next transform
     void trigger();

@@ -148,10 +148,10 @@ struct FFTWCalc
     FFTWCalc();
     ~FFTWCalc();
 
-    bool set_fsamp(double f);
-    bool set_wtype(FFTWCalc::WindowType type);
+    void set_fsamp(double f);
+    void set_wtype(FFTWCalc::WindowType type);
+    void set_input_real(std::unique_ptr<std::vector<double, FFTWAllocator<double>>> inp);
 
-    void set_input(std::unique_ptr<std::vector<double, FFTWAllocator<double>>> inp);
     bool apply_window();
     bool replan();
     void transform();

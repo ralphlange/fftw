@@ -41,7 +41,7 @@ FFTWCalc::FFTWCalc()
 
 FFTWCalc::~FFTWCalc() {}
 
-bool
+void
 FFTWCalc::set_fsamp(double f)
 {
     bool changed = fsamp != f;
@@ -49,11 +49,10 @@ FFTWCalc::set_fsamp(double f)
         fsamp = f;
         redo_plan = true; // strictly speaking not needed
     }
-    return changed;
 }
 
 void
-FFTWCalc::set_input(std::unique_ptr<std::vector<double, FFTWAllocator<double>>> inp)
+FFTWCalc::set_input_real(std::unique_ptr<std::vector<double, FFTWAllocator<double>>> inp)
 {
     input = std::move(inp);
     newval = true;

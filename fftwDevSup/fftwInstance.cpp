@@ -13,7 +13,9 @@
  */
 
 #include <cmath>
+#include <cstring>
 #include <iostream>
+#include <iomanip>
 
 #include <dbScan.h>
 #include <epicsThread.h>
@@ -205,19 +207,23 @@ FFTWInstance::show(const unsigned int verbosity) const
     std::cout << "Instance " << name << " using job " << job << " of pool " << workers.pool
               << "\nConnected records:";
     for (auto &conn : inputs) {
-        std::cout << "\n  " << FFTWConnector::SignalTypeName(conn->sigtype) << ": "
-                  << conn->prec->name;
+        const char *type = FFTWConnector::SignalTypeName(conn->sigtype);
+        std::cout << "\n  " << type << std::setw(15 - strlen(type)) << std::left << ": "
+                  << std::right << conn->prec->name;
     }
     for (auto &conn : outputs) {
-        std::cout << "\n  " << FFTWConnector::SignalTypeName(conn->sigtype) << ": "
-                  << conn->prec->name;
+        const char *type = FFTWConnector::SignalTypeName(conn->sigtype);
+        std::cout << "\n  " << type << std::setw(15 - strlen(type)) << std::left << ": "
+                  << std::right << conn->prec->name;
     }
     if (triggerSrc)
         std::cout << "\nTriggered by: " << triggerSrc->prec->name;
     else
         std::cout << "\nNo trigger set";
-    std::cout << "\nInput size: " << fftw.input_sz;
-    std::cout << "\nWindow type: " << FFTWCalc::WindowTypeName(fftw.wintype);
+    std::cout << "\nInput size: " << fftw.input_sz
+              << "\nWindow type: " << FFTWCalc::WindowTypeName(fftw.wintype)
+              << "\nSample freq: " << fftw.fsamp
+              << "\nExec time: " << lasttime;
     std::cout << std::endl;
 }
 

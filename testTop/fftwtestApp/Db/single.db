@@ -44,6 +44,24 @@ record (aai, "$(P)$(R)out-imag") {
   field(TPRO, "15")
 }
 
+record (aai, "$(P)$(R)out-magn") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-magn")
+  field(FTVL, "DOUBLE")
+  field(NELM, "65")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-phas") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-phas")
+  field(FTVL, "DOUBLE")
+  field(NELM, "65")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
 record (aai, "$(P)$(R)fscale") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-fscale")

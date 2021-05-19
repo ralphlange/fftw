@@ -100,61 +100,56 @@ FFTWInstance::calculate()
     if (fftw.output.size() == 0 || fftw.window.size() == 0 || fftw.fscale.size() == 0)
         valid = false;
 
-    double *outr = nullptr;
-    double *outi = nullptr;
-    double *outm = nullptr;
-    double *outp = nullptr;
-    double *outf = nullptr;
-    double *getf = nullptr;
-    double *outw = nullptr;
-    double *getw = nullptr;
+    // Trying to do some optimization while letting the compiler still do vectorization
+    // - always do the simple transactions
+    // - do a second loop with the complex transactions if required
 
-    if (useReal) {
+#define creal(C) C[0]
+#define cimag(C) C[1]
+
+    if (!outReal)
         outReal = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
-        outr = outReal->data();
-    }
-    if (useImag) {
+    double *outr = outReal->data();
+    if (!outImag)
         outImag = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
-        outi = outImag->data();
-    }
-    if (useMagn) {
-        outMagn = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
-        outm = outMagn->data();
-    }
-    if (usePhas) {
-        outPhas = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
-        outp = outPhas->data();
-    }
-    if (useFscale && fscale_changed) {
-        outFscale = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
-        outf = outFscale->data();
-        getf = fftw.fscale.data();
-    }
+    double *outi = outImag->data();
 
     for (size_t i = 0; i < fftw.nfreq; i++) {
         fftw_complex &out = fftw.output[i];
-#define creal(C) C[0]
-#define cimag(C) C[1]
-        if (useReal)
-            outr[i] = creal(out);
-        if (useImag)
-            outi[i] = cimag(out);
-        if (useMagn)
+        outr[i] = creal(out);
+        outi[i] = cimag(out);
+    }
+
+    if (useMagn || usePhas) {
+        outMagn = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        double *outm = outMagn->data();
+        outPhas = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        double *outp = outPhas->data();
+
+        for (size_t i = 0; i < fftw.nfreq; i++) {
+            fftw_complex &out = fftw.output[i];
             outm[i] = 20. * log(sqrt(creal(out) * creal(out) + cimag(out) * cimag(out)));
-        if (usePhas)
             outp[i] = atan(cimag(out) / creal(out));
-        if (useFscale && fscale_changed)
-            outf[i] = getf[i];
+        }
+    }
+
 #undef creal
 #undef cimag
-    }
 
     if (useWindow && window_changed) {
         outWindow = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.ntime));
-        outw = outWindow->data();
-        getw = fftw.window.data();
+        double *outw = outWindow->data();
+        double *getw = fftw.window.data();
         for (size_t i = 0; i < fftw.ntime; i++)
             outw[i] = getw[i];
+    }
+
+    if (useFscale && fscale_changed) {
+        outFscale = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        double *outf = outFscale->data();
+        double *getf = fftw.fscale.data();
+        for (size_t i = 0; i < fftw.nfreq; i++)
+            outf[i] = getf[i];
     }
 
     runtime.maybeSnap("calculate() post-proc", 1e-3);

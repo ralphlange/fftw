@@ -21,8 +21,6 @@
 #include <fftw3.h>
 
 #include <dbScan.h>
-#include <epicsGuard.h>
-#include <epicsMutex.h>
 #include <epicsThreadPool.h>
 #include <epicsTime.h>
 
@@ -63,9 +61,6 @@ struct PTimer {
     }
 };
 
-typedef epicsGuard<epicsMutex> Guard;
-typedef epicsGuardRelease<epicsMutex> UnGuard;
-
 class FFTWConnector;
 
 //typedef std::vector<double, FFTWAllocator<double>> FFTWvector_d;
@@ -83,7 +78,6 @@ class FFTWInstance
 {
 public:
     std::string name;
-    epicsMutex lock;
 
     epicsTimeStamp timein, timeout;
     double lasttime;

@@ -429,7 +429,7 @@ write_enum(REC *prec)
             case FFTWCalc::None:
             case FFTWCalc::Hann:
                 failed = false;
-                conn->wintype = static_cast<FFTWCalc::WindowType>(prec->rval);
+                conn->setWindowType(static_cast<FFTWCalc::WindowType>(prec->rval));
                 if (prec->tpro > 1)
                     std::cerr << prec->name << ": set window type " << conn->inst->fftw.wintype
                               << std::endl;
@@ -454,9 +454,9 @@ write_double(REC *prec)
         bool failed = true;
         if (conn->sigtype == FFTWConnector::SetSampleFreq) {
             failed = false;
-            conn->fsample = analogEGU2Raw<double>(prec, prec->val);
+            conn->setSampleFreq(analogEGU2Raw<double>(prec, prec->val));
             if (prec->tpro > 1)
-                std::cerr << prec->name << ": set sample freq " << conn->fsample << std::endl;
+                std::cerr << prec->name << ": set sample freq " << conn->getSampleFreq() << std::endl;
         }
         if (failed) {
             (void) recGblSetSevr(prec, WRITE_ALARM, INVALID_ALARM);

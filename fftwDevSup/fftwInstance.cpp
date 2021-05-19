@@ -77,10 +77,10 @@ FFTWInstance::calculate()
             fftw.set_input_real(conn->getNextInputValue());
             break;
         case FFTWConnector::SetSampleFreq:
-            fftw.set_fsamp(conn->fsample);
+            fftw.set_fsamp(conn->getSampleFreq());
             break;
         case FFTWConnector::SetWindowType:
-            fftw.set_wtype(conn->wintype);
+            fftw.set_wtype(conn->getWindowType());
             break;
         default:
             break;

@@ -40,7 +40,6 @@ FFTWConnector::get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io)
         *io = inst->valueScan;
         return 0;
     case OutputFscale:
-        Guard(inst->lock);
         *io = inst->scaleScan;
         return 0;
     case OutputWindow:
@@ -76,16 +75,17 @@ FFTWConnector::setNextOutputValue(std::unique_ptr<std::vector<double>> value)
 void
 FFTWConnector::getNextOutputValue(void **bptr, epicsUInt32 nelm, epicsUInt32 *nord)
 {
-    if (next_out) {
-        epicsUInt32 N = std::min<epicsUInt32>(nelm, (epicsUInt32) next_out->size());
+    std::unique_ptr<std::vector<double>> vec = std::move(next_out);
+    if (vec) {
+        epicsUInt32 N = std::min<epicsUInt32>(nelm, (epicsUInt32) vec->size());
         if (N < nelm) {
-            next_out->resize(nelm);
+            vec->resize(nelm);
             *nord = N;
         } else {
             *nord = nelm;
         }
-        *bptr = next_out.get()->data();
-        curr_out = std::move(next_out);
+        *bptr = vec.get()->data();
+        curr_out = std::move(vec);
     }
 }
 
@@ -93,17 +93,33 @@ void
 FFTWConnector::createEmptyOutputValue(void **bptr, epicsUInt32 nelm)
 {
     std::unique_ptr<std::vector<double>> vec(new std::vector<double>(nelm));
+    *bptr = vec.get()->data();
     curr_out = std::move(vec);
-    *bptr = curr_out.get()->data();
+}
+
+void
+FFTWConnector::setSampleFreq(const double f)
+{
+    Guard G(lock);
+    fsample = f;
 }
 
 double FFTWConnector::getSampleFreq()
 {
+    Guard G(lock);
     return fsample;
+}
+
+void
+FFTWConnector::setWindowType(const FFTWCalc::WindowType t)
+{
+    Guard G(lock);
+    wintype = t;
 }
 
 FFTWCalc::WindowType FFTWConnector::getWindowType()
 {
+    Guard G(lock);
     return wintype;
 }
 

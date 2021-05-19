@@ -20,8 +20,13 @@
 
 #include <dbScan.h>
 #include <dbCommon.h>
+#include <epicsMutex.h>
+#include <epicsGuard.h>
 
 #include "fftwCalc.h"
+
+typedef epicsGuard<epicsMutex> Guard;
+typedef epicsGuardRelease<epicsMutex> UnGuard;
 
 class FFTWInstance;
 
@@ -81,13 +86,12 @@ public:
         return "<none>";
     }
 
+    epicsMutex lock;
     FFTWInstance *inst;
     dbCommon *prec;
 
     SignalType sigtype;
-    FFTWCalc::WindowType wintype;
     TransformType trftype;
-    double fsample;
 
     long get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io);
 
@@ -103,6 +107,12 @@ public:
 
     // Create new value and move into record
     void createEmptyOutputValue(void **bptr, epicsUInt32 nelm);
+
+    // Set sampling frequency
+    void setSampleFreq(const double f);
+
+    // Set window type
+    void setWindowType(const FFTWCalc::WindowType t);
 
     // FFTW instance side interface
 
@@ -124,6 +134,8 @@ public:
 private:
     std::unique_ptr<std::vector<double>> curr_out, next_out;
     std::unique_ptr<std::vector<double, FFTWAllocator<double>>> next_inp;
+    FFTWCalc::WindowType wintype;
+    double fsample;
 };
 
 #endif // FFTWCONNECTOR_H

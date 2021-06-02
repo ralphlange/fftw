@@ -79,7 +79,6 @@ class FFTWInstance
 public:
     std::string name;
 
-    epicsTimeStamp timein, timeout;
     double lasttime;
     bool valid;
 

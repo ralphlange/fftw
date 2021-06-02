@@ -436,6 +436,10 @@ write_enum(REC *prec)
                 break;
             }
         }
+        if (!failed && conn->inst->triggerSrc == conn) {
+            conn->setTimestamp(prec->time);
+            conn->trigger();
+        }
         if (failed) {
             (void) recGblSetSevr(prec, WRITE_ALARM, INVALID_ALARM);
             return S_dev_badRequest;
@@ -457,6 +461,10 @@ write_double(REC *prec)
             conn->setSampleFreq(analogEGU2Raw<double>(prec, prec->val));
             if (prec->tpro > 1)
                 std::cerr << prec->name << ": set sample freq " << conn->getSampleFreq() << std::endl;
+        }
+        if (!failed && conn->inst->triggerSrc == conn) {
+            conn->setTimestamp(prec->time);
+            conn->trigger();
         }
         if (failed) {
             (void) recGblSetSevr(prec, WRITE_ALARM, INVALID_ALARM);
@@ -480,7 +488,8 @@ write_double_arr(REC *prec)
             conn->setNextInputValue(prec->bptr, prec->nord);
             failed = false;
         }
-        if (conn->inst->triggerSrc == conn) {
+        if (!failed && conn->inst->triggerSrc == conn) {
+            conn->setTimestamp(prec->time);
             conn->trigger();
         }
         if (failed) {
@@ -505,10 +514,7 @@ read_double(REC *prec)
             double val = analogRaw2EGU<double>(prec, conn->inst->lasttime);
             prec->val = val;
             prec->udf = 0;
-
-            if (prec->tse == -2)
-                prec->time = conn->inst->timeout;
-
+            prec->time = conn->getTimestamp();
             status = 2;
             failed = false;
         }
@@ -531,10 +537,7 @@ read_double_arr(REC *prec)
 
         conn->getNextOutputValue(&prec->bptr, prec->nelm, &prec->nord);
         prec->udf = 0;
-
-        if (prec->tse == -2)
-            prec->time = conn->inst->timeout;
-
+        prec->time = conn->getTimestamp();
         return 0;
     }
     CATCH(__FUNCTION__)

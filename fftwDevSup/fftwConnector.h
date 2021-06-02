@@ -22,6 +22,7 @@
 #include <dbCommon.h>
 #include <epicsMutex.h>
 #include <epicsGuard.h>
+#include <epicsTime.h>
 
 #include "fftwCalc.h"
 
@@ -131,11 +132,18 @@ public:
     // Trigger the next transform
     void trigger();
 
+    // Set timestamp
+    void setTimestamp(const epicsTimeStamp &ts);
+
+    // Get timestamp
+    epicsTimeStamp getTimestamp();
+
 private:
     std::unique_ptr<std::vector<double>> curr_out, next_out;
     std::unique_ptr<std::vector<double, FFTWAllocator<double>>> next_inp;
     FFTWCalc::WindowType wintype;
     double fsample;
+    epicsTimeStamp ts;
 };
 
 #endif // FFTWCONNECTOR_H

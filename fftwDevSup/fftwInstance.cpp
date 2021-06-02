@@ -87,6 +87,8 @@ FFTWInstance::calculate()
         }
     }
 
+    epicsTimeStamp ts = triggerSrc->getTimestamp();
+
     bool window_changed = fftw.apply_window();
     runtime.maybeSnap("calculate() prepare", 5e-3);
 
@@ -155,6 +157,7 @@ FFTWInstance::calculate()
     runtime.maybeSnap("calculate() post-proc", 1e-3);
 
     for (auto conn : outputs) {
+        conn->setTimestamp(ts);
         switch (conn->sigtype) {
         case FFTWConnector::OutputImag:
             conn->setNextOutputValue(std::move(outImag));

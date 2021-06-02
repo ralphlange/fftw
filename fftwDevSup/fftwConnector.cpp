@@ -128,3 +128,15 @@ FFTWConnector::trigger()
 {
     inst->trigger();
 }
+
+void
+FFTWConnector::setTimestamp(const epicsTimeStamp &ts)
+{
+    Guard G(lock);
+    this->ts = ts;
+}
+
+epicsTimeStamp FFTWConnector::getTimestamp()
+{
+    return ts;
+}

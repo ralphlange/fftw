@@ -56,6 +56,18 @@ FFTWInstance::FFTWInstance(const std::string &name)
     , lasttime(0.0)
     , valid(false)
     , triggerSrc(nullptr)
+    , useReal(false)
+    , useImag(false)
+    , useMagn(false)
+    , usePhas(false)
+    , useFscale(false)
+    , useWindow(false)
+    , sizeReal(0)
+    , sizeImag(0)
+    , sizeMagn(0)
+    , sizePhas(0)
+    , sizeFscale(0)
+    , sizeWindow(0)
 {
     scanIoInit(&valueScan);
     scanIoInit(&scaleScan);
@@ -108,23 +120,27 @@ FFTWInstance::calculate()
 #define creal(C) C[0]
 #define cimag(C) C[1]
 
-    if (!outReal)
-        outReal = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
-    double *outr = outReal->data();
-    if (!outImag)
-        outImag = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
-    double *outi = outImag->data();
+    if (useReal || useImag) {
+        outReal = std::shared_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outReal->reserve(sizeReal);
+        double *outr = outReal->data();
+        outImag = std::shared_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outImag->reserve(sizeImag);
+        double *outi = outImag->data();
 
-    for (size_t i = 0; i < fftw.nfreq; i++) {
-        fftw_complex &out = fftw.output[i];
-        outr[i] = creal(out);
-        outi[i] = cimag(out);
+        for (size_t i = 0; i < fftw.nfreq; i++) {
+            fftw_complex &out = fftw.output[i];
+            outr[i] = creal(out);
+            outi[i] = cimag(out);
+        }
     }
 
     if (useMagn || usePhas) {
-        outMagn = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outMagn = std::shared_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outMagn->reserve(sizeMagn);
         double *outm = outMagn->data();
-        outPhas = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outPhas = std::shared_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outPhas->reserve(sizePhas);
         double *outp = outPhas->data();
 
         for (size_t i = 0; i < fftw.nfreq; i++) {
@@ -138,7 +154,8 @@ FFTWInstance::calculate()
 #undef cimag
 
     if (useWindow && window_changed) {
-        outWindow = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.ntime));
+        outWindow = std::shared_ptr<std::vector<double>>(new std::vector<double>(fftw.ntime));
+        outWindow->reserve(sizeWindow);
         double *outw = outWindow->data();
         double *getw = fftw.window.data();
         for (size_t i = 0; i < fftw.ntime; i++)
@@ -146,7 +163,8 @@ FFTWInstance::calculate()
     }
 
     if (useFscale && fscale_changed) {
-        outFscale = std::unique_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outFscale = std::shared_ptr<std::vector<double>>(new std::vector<double>(fftw.nfreq));
+        outFscale->reserve(sizeFscale);
         double *outf = outFscale->data();
         double *getf = fftw.fscale.data();
         for (size_t i = 0; i < fftw.nfreq; i++)
@@ -160,24 +178,24 @@ FFTWInstance::calculate()
         conn->setTimestamp(ts);
         switch (conn->sigtype) {
         case FFTWConnector::OutputImag:
-            conn->setNextOutputValue(std::move(outImag));
+            conn->setNextOutputValue(outImag);
             break;
         case FFTWConnector::OutputReal:
-            conn->setNextOutputValue(std::move(outReal));
+            conn->setNextOutputValue(outReal);
             break;
         case FFTWConnector::OutputMagn:
-            conn->setNextOutputValue(std::move(outMagn));
+            conn->setNextOutputValue(outMagn);
             break;
         case FFTWConnector::OutputPhas:
-            conn->setNextOutputValue(std::move(outPhas));
+            conn->setNextOutputValue(outPhas);
             break;
         case FFTWConnector::OutputFscale:
             if (fscale_changed)
-                conn->setNextOutputValue(std::move(outFscale));
+                conn->setNextOutputValue(outFscale);
             break;
         case FFTWConnector::OutputWindow:
             if (window_changed)
-                conn->setNextOutputValue(std::move(outWindow));
+                conn->setNextOutputValue(outWindow);
             break;
         case FFTWConnector::ExecutionTime:
             conn->setRuntime(lasttime);
@@ -212,6 +230,21 @@ FFTWInstance::show(const unsigned int verbosity) const
         conn->show(verbosity, 2);
     for (auto &conn : outputs)
         conn->show(verbosity, 2);
+    if (verbosity > 1) {
+        std::cout << "\nRequired output vector sizes:\n ";
+        if (useReal)
+            std::cout << " Real:" << sizeReal;
+        if (useImag)
+            std::cout << " Imag:" << sizeImag;
+        if (useMagn)
+            std::cout << " Magn:" << sizeMagn;
+        if (usePhas)
+            std::cout << " Phas:" << sizePhas;
+        if (useFscale)
+            std::cout << " Fscale:" << sizeFscale;
+        if (useWindow)
+            std::cout << " Window:" << sizeWindow;
+    }
     if (triggerSrc)
         std::cout << "\nTriggered by: " << triggerSrc->prec->name;
     else
@@ -221,6 +254,39 @@ FFTWInstance::show(const unsigned int verbosity) const
               << "\nSample freq: " << fftw.fsamp
               << "\nExec time: " << lasttime;
     std::cout << std::endl;
+}
+
+// Careful: not thread safe (ok during record initialization)
+void FFTWInstance::setRequiredOutputSize(const FFTWConnector::SignalType type, const epicsUInt32 size)
+{
+    switch (type) {
+    case FFTWConnector::OutputReal:
+        if (size > sizeReal)
+            sizeReal = size;
+        break;
+    case FFTWConnector::OutputImag:
+        if (size > sizeImag)
+            sizeImag = size;
+        break;
+    case FFTWConnector::OutputMagn:
+        if (size > sizeMagn)
+            sizeMagn = size;
+        break;
+    case FFTWConnector::OutputPhas:
+        if (size > sizePhas)
+            sizePhas = size;
+        break;
+    case FFTWConnector::OutputFscale:
+        if (size > sizeFscale)
+            sizeFscale = size;
+        break;
+    case FFTWConnector::OutputWindow:
+        if (size > sizeWindow)
+            sizeWindow = size;
+        break;
+    default:
+        break;
+    }
 }
 
 FFTWInstance *

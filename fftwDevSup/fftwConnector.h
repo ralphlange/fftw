@@ -96,7 +96,11 @@ public:
 
     long get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io);
 
+    // Report connector setup
     void show(const unsigned int verbosity, const unsigned char indent = 0) const;
+
+    // Notify instance about size of output data
+    void setRequiredOutputSize(const epicsUInt32 nelm);
 
     // Record side interface
     //     called from record processing
@@ -129,7 +133,7 @@ public:
     std::unique_ptr<std::vector<double, FFTWAllocator<double>>> getNextInputValue();
 
     // Move value from instance into connector (next)
-    void setNextOutputValue(std::unique_ptr<std::vector<double>> value);
+    void setNextOutputValue(std::shared_ptr<std::vector<double>> value);
 
     // Get the sampling frequency
     double getSampleFreq();
@@ -150,7 +154,7 @@ public:
     epicsTimeStamp getTimestamp();
 
 private:
-    std::unique_ptr<std::vector<double>> curr_out, next_out;
+    std::shared_ptr<std::vector<double>> curr_out, next_out;
     std::unique_ptr<std::vector<double, FFTWAllocator<double>>> next_inp;
     FFTWCalc::WindowType wintype;
     double fsample;

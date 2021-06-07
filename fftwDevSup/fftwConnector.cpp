@@ -68,6 +68,12 @@ FFTWConnector::show(const unsigned int verbosity, const unsigned char indent) co
 }
 
 void
+FFTWConnector::setRequiredOutputSize(const epicsUInt32 nelm)
+{
+    inst->setRequiredOutputSize(sigtype, nelm);
+}
+
+void
 FFTWConnector::setNextInputValue(void *bptr, epicsUInt32 elements)
 {
     std::unique_ptr<std::vector<double, FFTWAllocator<double>>> vec(new std::vector<double, FFTWAllocator<double>>());
@@ -84,7 +90,7 @@ FFTWConnector::getNextInputValue()
 }
 
 void
-FFTWConnector::setNextOutputValue(std::unique_ptr<std::vector<double>> value)
+FFTWConnector::setNextOutputValue(std::shared_ptr<std::vector<double>> value)
 {
     next_out = std::move(value);
 }
@@ -92,15 +98,10 @@ FFTWConnector::setNextOutputValue(std::unique_ptr<std::vector<double>> value)
 void
 FFTWConnector::getNextOutputValue(void **bptr, epicsUInt32 nelm, epicsUInt32 *nord)
 {
-    std::unique_ptr<std::vector<double>> vec = std::move(next_out);
+    std::shared_ptr<std::vector<double>> vec = std::move(next_out);
     if (vec) {
-        epicsUInt32 N = std::min<epicsUInt32>(nelm, (epicsUInt32) vec->size());
-        if (N < nelm) {
-            vec->resize(nelm);
-            *nord = N;
-        } else {
-            *nord = nelm;
-        }
+        assert(vec->capacity() >= nelm);
+        *nord = std::min<epicsUInt32>(nelm, static_cast<epicsUInt32>(vec->size()));
         double *data = vec.get()->data();
         if (skipDC && *nord > 1) {
             data += 1;
@@ -114,7 +115,7 @@ FFTWConnector::getNextOutputValue(void **bptr, epicsUInt32 nelm, epicsUInt32 *no
 void
 FFTWConnector::createEmptyOutputValue(void **bptr, epicsUInt32 nelm)
 {
-    std::unique_ptr<std::vector<double>> vec(new std::vector<double>(nelm));
+    std::shared_ptr<std::vector<double>> vec(new std::vector<double>(nelm));
     *bptr = vec.get()->data();
     curr_out = std::move(vec);
 }

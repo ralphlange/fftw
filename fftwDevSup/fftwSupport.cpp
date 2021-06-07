@@ -407,6 +407,8 @@ init_record_read_arr(REC *prec)
     long status = init_record<REC>(prec);
     FFTWConnector *conn = static_cast<FFTWConnector *>(prec->dpvt);
 
+    conn->setRequiredOutputSize(prec->nelm);
+
     if (prec->ftvl != menuFtypeDOUBLE)
         throw std::runtime_error("Unsupported FTVL");
 

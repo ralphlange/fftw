@@ -87,8 +87,9 @@ public:
     std::vector<FFTWConnector *> inputs;
     std::vector<FFTWConnector *> outputs;
 
-    std::unique_ptr<std::vector<double>> outReal, outImag, outMagn, outPhas, outFscale, outWindow;
+    std::shared_ptr<std::vector<double>> outReal, outImag, outMagn, outPhas, outFscale, outWindow;
     bool useReal, useImag, useMagn, usePhas, useFscale, useWindow;
+    size_t sizeReal, sizeImag, sizeMagn, sizePhas, sizeFscale, sizeWindow;
 
     PTimer calctime;
     FFTWCalc fftw;
@@ -99,6 +100,9 @@ public:
 
     // Show method to print the setup
     void show(const unsigned int verbosity) const;
+
+    // Set minimum output size (largest connected array record)
+    void setRequiredOutputSize(const FFTWConnector::SignalType type, const epicsUInt32 size);
 
     // Find an instance
     static FFTWInstance *find(const std::string &name);

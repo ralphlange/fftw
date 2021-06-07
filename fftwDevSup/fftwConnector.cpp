@@ -30,6 +30,7 @@ FFTWConnector::FFTWConnector(dbCommon *prec)
     : inst(nullptr)
     , prec(prec)
     , sigtype(None)
+    , skipDC(false)
 {}
 
 long
@@ -100,7 +101,12 @@ FFTWConnector::getNextOutputValue(void **bptr, epicsUInt32 nelm, epicsUInt32 *no
         } else {
             *nord = nelm;
         }
-        *bptr = vec.get()->data();
+        double *data = vec.get()->data();
+        if (skipDC && *nord > 1) {
+            data += 1;
+            *nord -= 1;
+        }
+        *bptr = data;
         curr_out = std::move(vec);
     }
 }
@@ -137,6 +143,12 @@ double
 FFTWConnector::getRuntime()
 {
     return runtime;
+}
+
+void
+FFTWConnector::setSkipDC(const bool skip)
+{
+    skipDC = skip;
 }
 
 FFTWCalc::WindowType FFTWConnector::getWindowType()

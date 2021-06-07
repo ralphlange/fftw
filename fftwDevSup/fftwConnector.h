@@ -120,6 +120,9 @@ public:
     // Get the runtime
     double getRuntime();
 
+    // Set skipDC flag
+    void setSkipDC(const bool skip);
+
     // FFTW instance side interface
 
     // Move value from connector into instance
@@ -152,6 +155,7 @@ private:
     FFTWCalc::WindowType wintype;
     double fsample;
     double runtime;
+    bool skipDC;
     epicsTimeStamp ts;
 };
 

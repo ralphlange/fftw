@@ -53,7 +53,7 @@ record (aai, "$(P)$(R)out-imag") {
 
 record (aai, "$(P)$(R)out-magn") {
   field(DTYP, "FFTW")
-  field(INP, "@$(P) output-magn")
+  field(INP, "@$(P) output-magn skipDC=y")
   field(FTVL, "DOUBLE")
   field(NELM, "65")
   field(SCAN, "I/O Intr")
@@ -71,7 +71,7 @@ record (aai, "$(P)$(R)out-phas") {
 
 record (aai, "$(P)$(R)fscale") {
   field(DTYP, "FFTW")
-  field(INP, "@$(P) output-fscale")
+  field(INP, "@$(P) output-fscale skipDC=y")
   field(FTVL, "DOUBLE")
   field(NELM, "65")
   field(SCAN, "I/O Intr")

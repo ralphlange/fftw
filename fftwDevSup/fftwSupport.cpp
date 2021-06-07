@@ -289,15 +289,19 @@ parseLink(dbCommon *prec, const DBEntry &ent)
             }
         }
         // All others: option=value
-        std::vector<std::string> option = splitString(token, '=');
-        if (option[0] == "trigger") {
-            if (isYes(option[1][0]) && !conn->inst->triggerSrc) {
+        std::vector<std::string> options = splitString(token, '=');
+        if (options[0] == "trigger") {
+            if (isYes(options[1][0]) && !conn->inst->triggerSrc) {
                 conn->inst->triggerSrc = conn.get();
                 if (prec->tpro > 1)
                     std::cerr << prec->name << ": this record will trigger FFTW instance '"
                               << conn->inst->name << "'" << std::endl;
             }
-            continue;
+        } else if (options[0] == "skipDC") {
+            if (isYes(options[1][0]))
+                conn->setSkipDC(true);
+            else
+                conn->setSkipDC(false);
         }
     }
     return conn.release();

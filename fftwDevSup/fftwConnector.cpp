@@ -15,6 +15,9 @@
 #include <memory>
 #include <utility>
 #include <algorithm>
+#include <cstring>
+#include <iostream>
+#include <iomanip>
 
 #include <dbScan.h>
 #include <dbCommon.h>
@@ -49,6 +52,18 @@ FFTWConnector::get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io)
     default:
         return 1;
     }
+}
+
+void
+FFTWConnector::show(const unsigned int verbosity, const unsigned char indent) const
+{
+    const char *type = FFTWConnector::SignalTypeName(sigtype);
+    size_t tlen = strlen(type);
+    std::cout << "\n"
+              << std::setw(indent + tlen) << type << std::setw(15 - tlen) << std::left << ": "
+              << std::right << prec->name;
+    if (skipDC)
+        std::cout << " skipDC=y";
 }
 
 void

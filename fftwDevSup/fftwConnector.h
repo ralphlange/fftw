@@ -96,6 +96,8 @@ public:
 
     long get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io);
 
+    void show(const unsigned int verbosity, const unsigned char indent = 0) const;
+
     // Record side interface
     //     called from record processing
     //     holds record lock

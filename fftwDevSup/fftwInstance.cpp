@@ -13,9 +13,7 @@
  */
 
 #include <cmath>
-#include <cstring>
 #include <iostream>
-#include <iomanip>
 
 #include <dbScan.h>
 #include <epicsThread.h>
@@ -210,16 +208,10 @@ FFTWInstance::show(const unsigned int verbosity) const
 {
     std::cout << "Instance " << name << " using job " << job << " of pool " << workers.pool
               << "\nConnected records:";
-    for (auto &conn : inputs) {
-        const char *type = FFTWConnector::SignalTypeName(conn->sigtype);
-        std::cout << "\n  " << type << std::setw(15 - strlen(type)) << std::left << ": "
-                  << std::right << conn->prec->name;
-    }
-    for (auto &conn : outputs) {
-        const char *type = FFTWConnector::SignalTypeName(conn->sigtype);
-        std::cout << "\n  " << type << std::setw(15 - strlen(type)) << std::left << ": "
-                  << std::right << conn->prec->name;
-    }
+    for (auto &conn : inputs)
+        conn->show(verbosity, 2);
+    for (auto &conn : outputs)
+        conn->show(verbosity, 2);
     if (triggerSrc)
         std::cout << "\nTriggered by: " << triggerSrc->prec->name;
     else

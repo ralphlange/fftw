@@ -115,6 +115,9 @@ public:
     // Set window type
     void setWindowType(const FFTWCalc::WindowType t);
 
+    // Get the runtime
+    double getRuntime();
+
     // FFTW instance side interface
 
     // Move value from connector into instance
@@ -132,6 +135,9 @@ public:
     // Trigger the next transform
     void trigger();
 
+    // Set the runtime
+    void setRuntime(const double time);
+
     // Set timestamp
     void setTimestamp(const epicsTimeStamp &ts);
 
@@ -143,6 +149,7 @@ private:
     std::unique_ptr<std::vector<double, FFTWAllocator<double>>> next_inp;
     FFTWCalc::WindowType wintype;
     double fsample;
+    double runtime;
     epicsTimeStamp ts;
 };
 

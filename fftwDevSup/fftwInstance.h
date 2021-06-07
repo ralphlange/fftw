@@ -90,6 +90,7 @@ public:
     std::unique_ptr<std::vector<double>> outReal, outImag, outMagn, outPhas, outFscale, outWindow;
     bool useReal, useImag, useMagn, usePhas, useFscale, useWindow;
 
+    PTimer calctime;
     FFTWCalc fftw;
 
     IOSCANPVT valueScan, scaleScan, windowScan;

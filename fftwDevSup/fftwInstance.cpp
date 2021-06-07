@@ -55,6 +55,7 @@ FFTWThreadPool::~FFTWThreadPool()
 
 FFTWInstance::FFTWInstance(const std::string &name)
     : name(name)
+    , lasttime(0.0)
     , valid(false)
     , triggerSrc(nullptr)
 {
@@ -156,6 +157,7 @@ FFTWInstance::calculate()
 
     runtime.maybeSnap("calculate() post-proc", 1e-3);
 
+    lasttime = calctime.snap();
     for (auto conn : outputs) {
         conn->setTimestamp(ts);
         switch (conn->sigtype) {
@@ -179,6 +181,9 @@ FFTWInstance::calculate()
             if (window_changed)
                 conn->setNextOutputValue(std::move(outWindow));
             break;
+        case FFTWConnector::ExecutionTime:
+            conn->setRuntime(lasttime);
+            break;
         default:
             break;
         }
@@ -196,6 +201,7 @@ FFTWInstance::trigger()
 {
     if (triggerSrc && triggerSrc->prec->tpro > 5)
         std::cerr << "Queueing calculation job for " << name << std::endl;
+    calctime.start();
     epicsJobQueue(job);
 }
 

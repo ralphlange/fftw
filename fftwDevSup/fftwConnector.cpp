@@ -37,6 +37,7 @@ FFTWConnector::get_ioint(int cmd, dbCommon *prec, IOSCANPVT *io)
     case OutputImag:
     case OutputMagn:
     case OutputPhas:
+    case ExecutionTime:
         *io = inst->valueScan;
         return 0;
     case OutputFscale:
@@ -117,6 +118,12 @@ FFTWConnector::setWindowType(const FFTWCalc::WindowType t)
     wintype = t;
 }
 
+double
+FFTWConnector::getRuntime()
+{
+    return runtime;
+}
+
 FFTWCalc::WindowType FFTWConnector::getWindowType()
 {
     Guard G(lock);
@@ -127,6 +134,13 @@ void
 FFTWConnector::trigger()
 {
     inst->trigger();
+}
+
+void
+FFTWConnector::setRuntime(const double time)
+{
+    Guard G(lock);
+    runtime = time;
 }
 
 void

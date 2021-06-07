@@ -18,6 +18,13 @@ record (ao, "$(P)$(R)fsample") {
   field(PINI, "YES")
 }
 
+record (ai, "$(P)$(R)exectime") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) exectime")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
 record (aao, "$(P)$(R)inp-real") {
   field(DTYP, "FFTW")
   field(OUT, "@$(P) input-real trigger=y")

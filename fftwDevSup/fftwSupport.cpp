@@ -275,7 +275,10 @@ parseLink(dbCommon *prec, const DBEntry &ent)
                     conn->inst->outputs.push_back(conn.get());
                     conn->inst->useWindow = true;
                     break;
-                default:
+                case FFTWConnector::ExecutionTime:
+                    conn->inst->outputs.push_back(conn.get());
+                    break;
+                case FFTWConnector::None:
                     break;
                 }
                 if (prec->tpro > 1)
@@ -511,7 +514,7 @@ read_double(REC *prec)
         bool failed = true;
 
         if (conn->sigtype == FFTWConnector::ExecutionTime) {
-            double val = analogRaw2EGU<double>(prec, conn->inst->lasttime);
+            double val = analogRaw2EGU<double>(prec, conn->getRuntime());
             prec->val = val;
             prec->udf = 0;
             prec->time = conn->getTimestamp();

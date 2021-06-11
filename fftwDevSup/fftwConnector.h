@@ -124,8 +124,8 @@ public:
     // Get the runtime
     double getRuntime();
 
-    // Set skipDC flag
-    void setSkipDC(const bool skip);
+    // Set offset from beginning
+    void setOffset(const size_t offset);
 
     // FFTW instance side interface
 
@@ -159,7 +159,7 @@ private:
     FFTWCalc::WindowType wintype;
     double fsample;
     double runtime;
-    bool skipDC;
+    size_t offset;
     epicsTimeStamp ts;
 };
 

@@ -30,7 +30,7 @@ FFTWConnector::FFTWConnector(dbCommon *prec)
     : inst(nullptr)
     , prec(prec)
     , sigtype(None)
-    , skipDC(false)
+    , offset(0)
 {}
 
 long
@@ -63,14 +63,14 @@ FFTWConnector::show(const unsigned int verbosity, const unsigned char indent) co
     std::cout << "\n"
               << std::setw(indent + tlen) << type << std::setw(15 - tlen) << std::left << ": "
               << std::right << prec->name;
-    if (skipDC)
-        std::cout << " skipDC=y";
+    if (offset)
+        std::cout << " offset=" << offset;
 }
 
 void
 FFTWConnector::setRequiredOutputSize(const epicsUInt32 nelm)
 {
-    inst->setRequiredOutputSize(sigtype, nelm);
+    inst->setRequiredOutputSize(sigtype, nelm + offset);
 }
 
 void
@@ -100,13 +100,11 @@ FFTWConnector::getNextOutputValue(void **bptr, epicsUInt32 nelm, epicsUInt32 *no
 {
     std::shared_ptr<std::vector<double>> vec = std::move(next_out);
     if (vec) {
-        assert(vec->capacity() >= nelm);
-        *nord = std::min<epicsUInt32>(nelm, static_cast<epicsUInt32>(vec->size()));
+        assert(vec->capacity() >= nelm + offset);
+        *nord = static_cast<epicsUInt32>(std::min<size_t>(nelm, vec->size() - offset));
         double *data = vec.get()->data();
-        if (skipDC && *nord > 1) {
-            data += 1;
-            *nord -= 1;
-        }
+        if (offset && vec->size() > offset)
+            data += offset;
         *bptr = data;
         curr_out = std::move(vec);
     }
@@ -147,9 +145,9 @@ FFTWConnector::getRuntime()
 }
 
 void
-FFTWConnector::setSkipDC(const bool skip)
+FFTWConnector::setOffset(const size_t offset)
 {
-    skipDC = skip;
+    this->offset = offset;
 }
 
 FFTWCalc::WindowType FFTWConnector::getWindowType()

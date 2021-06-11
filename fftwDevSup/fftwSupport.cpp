@@ -299,9 +299,15 @@ parseLink(dbCommon *prec, const DBEntry &ent)
             }
         } else if (options[0] == "skipDC") {
             if (isYes(options[1][0]))
-                conn->setSkipDC(true);
-            else
-                conn->setSkipDC(false);
+                conn->setOffset(1ul);
+        } else if (options[0] == "offset") {
+            unsigned long off = 0;
+            try {
+                off = std::stoul(options[1]);
+            } catch (std::exception &e) {
+                off = 0ul;
+            }
+            conn->setOffset(off);
         }
     }
     return conn.release();

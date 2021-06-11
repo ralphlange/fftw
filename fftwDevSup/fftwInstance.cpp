@@ -224,8 +224,10 @@ FFTWInstance::trigger()
 void
 FFTWInstance::show(const unsigned int verbosity) const
 {
-    std::cout << "Instance " << name << " using job " << job << " of pool " << workers.pool
-              << "\nConnected records:";
+    std::cout << "Instance " << name;
+    if (verbosity > 1)
+        std::cout << " using job " << job << " of pool " << workers.pool;
+    std::cout << "\nConnected records:";
     for (auto &conn : inputs)
         conn->show(verbosity, 2);
     for (auto &conn : outputs)

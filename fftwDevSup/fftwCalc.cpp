@@ -143,8 +143,12 @@ FFTWCalc::replan()
 
         epicsGuard<epicsMutex> pg(fftwplanlock);
 
+        // use a junk buffer as planning would overwrite the input
+        std::unique_ptr<std::vector<double, FFTWAllocator<double>>> buf(new std::vector<double, FFTWAllocator<double>>());
+        buf->reserve(input->size());
+
         // FFTW_EXHAUSTIVE > FFTW_PATIENT > FFTW_MEASURE > FFTW_ESTIMATE
-        plan = fftw_plan_dft_r2c_1d(ntime, input->data(), output.data(), FFTW_MEASURE);
+        plan = fftw_plan_dft_r2c_1d(ntime, buf->data(), output.data(), FFTW_MEASURE);
 
         redo_plan = false;
     }
@@ -154,7 +158,7 @@ FFTWCalc::replan()
 void
 FFTWCalc::transform()
 {
-    fftw_execute(plan.get());
+    fftw_execute_dft_r2c(plan.get(), input->data(), output.data());
 }
 
 #include <epicsExport.h>

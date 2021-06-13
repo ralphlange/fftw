@@ -114,8 +114,7 @@ FFTWInstance::calculate()
         valid = false;
 
     // Trying to do some optimization while letting the compiler still do vectorization
-    // - always do the simple transactions
-    // - do a second loop with the complex transactions if required
+    // - do two loops with the simple and complex transactions (each one only if required)
 
 #define creal(C) C[0]
 #define cimag(C) C[1]

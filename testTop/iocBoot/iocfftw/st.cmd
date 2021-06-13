@@ -10,7 +10,8 @@ dbLoadDatabase("../../dbd/fftwtest.dbd",0,0)
 fftwtest_registerRecordDeviceDriver(pdbbase) 
 
 ## Load record instances
-dbLoadRecords("../../db/single.db","P=A1,R=:")
+dbLoadRecords("../../db/single.db","P=A1,R=:,TIME_N=128,FREQ_N=65")
+dbLoadRecords("../../db/single.db","P=A2,R=:,TIME_N=1024,FREQ_N=513")
 
 iocInit()
 

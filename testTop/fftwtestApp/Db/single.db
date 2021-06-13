@@ -1,4 +1,8 @@
 # single setup for FFT
+#
+# P       prefix and name of FFT instance
+# TIME_N  number of samples (size of inp arrays)
+# FREQ_N  size of output arrays (TIME_N / 2 + 1)
 
 record (mbbo, "$(P)$(R)wintype") {
   field(DTYP, "FFTW")
@@ -29,7 +33,7 @@ record (aao, "$(P)$(R)inp-real") {
   field(DTYP, "FFTW")
   field(OUT, "@$(P) input-real trigger=y")
   field(FTVL, "DOUBLE")
-  field(NELM, "128")
+  field(NELM, "$(TIME_N)")
   field(TPRO, "15")
 }
 
@@ -37,7 +41,7 @@ record (aai, "$(P)$(R)out-real") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-real")
   field(FTVL, "DOUBLE")
-  field(NELM, "65")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -46,7 +50,7 @@ record (aai, "$(P)$(R)out-imag") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-imag")
   field(FTVL, "DOUBLE")
-  field(NELM, "65")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -55,7 +59,7 @@ record (aai, "$(P)$(R)out-magn") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-magn")
   field(FTVL, "DOUBLE")
-  field(NELM, "65")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -64,7 +68,7 @@ record (aai, "$(P)$(R)out-magn2") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-magn skipDC=y")
   field(FTVL, "DOUBLE")
-  field(NELM, "64")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -73,7 +77,7 @@ record (aai, "$(P)$(R)out-magn3") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-magn offset=3")
   field(FTVL, "DOUBLE")
-  field(NELM, "5")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -82,7 +86,7 @@ record (aai, "$(P)$(R)out-phas") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-phas")
   field(FTVL, "DOUBLE")
-  field(NELM, "65")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -91,7 +95,7 @@ record (aai, "$(P)$(R)fscale") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-fscale")
   field(FTVL, "DOUBLE")
-  field(NELM, "65")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -100,7 +104,7 @@ record (aai, "$(P)$(R)fscale2") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-fscale skipDC=y")
   field(FTVL, "DOUBLE")
-  field(NELM, "64")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -109,7 +113,7 @@ record (aai, "$(P)$(R)fscale3") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-fscale offset=3")
   field(FTVL, "DOUBLE")
-  field(NELM, "5")
+  field(NELM, "$(FREQ_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }
@@ -118,7 +122,7 @@ record (aai, "$(P)$(R)window") {
   field(DTYP, "FFTW")
   field(INP, "@$(P) output-window")
   field(FTVL, "DOUBLE")
-  field(NELM, "128")
+  field(NELM, "$(TIME_N)")
   field(SCAN, "I/O Intr")
   field(TPRO, "15")
 }

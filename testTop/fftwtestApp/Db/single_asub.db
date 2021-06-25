@@ -34,6 +34,7 @@ record (ai, "$(P)$(R)exectime") {
 record (aai, "$(P)$(R)inp-real") {
   field(FTVL, "DOUBLE")
   field(NELM, "$(TIME_N)")
+  field(FLNK, "$(P)$(R)inp-sub")
 }
 
 record (aSub, "$(P)$(R)inp-sub") {

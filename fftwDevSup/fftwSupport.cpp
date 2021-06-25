@@ -220,19 +220,15 @@ splitString(const std::string &str, const char delim)
 
 // Link parameter parser
 FFTWConnector *
-parseLink(dbCommon *prec, const DBEntry &ent)
+parseLink(dbCommon *prec, const char *config)
 {
-    DBLINK *link = ent.getDevLink();
     std::unique_ptr<FFTWConnector> conn (new FFTWConnector(prec));
 
-    if (link->type != INST_IO)
-        throw std::logic_error("link is not INST_IO");
-
     if (prec->tpro > 10)
-        std::cerr << prec->name << ": parsing link '" << link->value.instio.string << "'"
+        std::cerr << prec->name << ": parsing config '" << config << "'"
                   << std::endl;
 
-    std::vector<std::string> tokens = splitString(link->value.instio.string, ' ');
+    std::vector<std::string> tokens = splitString(config, ' ');
 
     for (const auto &token : tokens) {
         // First token: instance name
@@ -360,7 +356,11 @@ init_record(REC *prec)
 {
     try {
         dbCommon *pdbc = reinterpret_cast<dbCommon *>(prec);
-        prec->dpvt = parseLink(pdbc, DBEntry(pdbc));
+        DBLINK *link = DBEntry(pdbc).getDevLink();
+        if (link->type != INST_IO)
+            throw std::logic_error("link is not INST_IO");
+
+        prec->dpvt = parseLink(pdbc, link->value.instio.string);
     }
     CATCH(__FUNCTION__)
     return 0;

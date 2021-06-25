@@ -1,0 +1,137 @@
+# single setup for FFT
+#
+# variant that uses an aSub to pull data from another record
+#
+# P       prefix and name of FFT instance
+# TIME_N  number of samples (size of inp arrays)
+# FREQ_N  size of output arrays (TIME_N / 2 + 1)
+
+record (mbbo, "$(P)$(R)wintype") {
+  field(DTYP, "FFTW")
+  field(OUT, "@$(P) windowtype")
+  field(ZRST, "None")
+  field(ZRVL, "0")
+  field(ONST, "Hann")
+  field(ONVL, "1")
+  field(VAL, "1")
+  field(PINI, "YES")
+}
+
+record (ao, "$(P)$(R)fsample") {
+  field(DTYP, "FFTW")
+  field(OUT, "@$(P) sample-freq")
+  field(VAL, "1e3")
+  field(PINI, "YES")
+}
+
+record (ai, "$(P)$(R)exectime") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) exectime")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)inp-real") {
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(TIME_N)")
+}
+
+record (aSub, "$(P)$(R)inp-sub") {
+  field(INAM, "FFTW_init")
+  field(SNAM, "FFTW_input")
+  field(INPA, "$(P)$(R)inp-real")
+  field(FTA,  "DOUBLE")
+  field(NOA,  "$(TIME_N)")
+  info(fftw:CONFIG, "$(P) input-real trigger=y")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-real") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-real")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-imag") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-imag")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-magn") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-magn")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-magn2") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-magn skipDC=y")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-magn3") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-magn offset=3")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)out-phas") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-phas")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)fscale") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-fscale")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)fscale2") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-fscale skipDC=y")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)fscale3") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-fscale offset=3")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(FREQ_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}
+
+record (aai, "$(P)$(R)window") {
+  field(DTYP, "FFTW")
+  field(INP, "@$(P) output-window")
+  field(FTVL, "DOUBLE")
+  field(NELM, "$(TIME_N)")
+  field(SCAN, "I/O Intr")
+  field(TPRO, "15")
+}

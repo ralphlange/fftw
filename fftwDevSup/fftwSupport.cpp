@@ -39,6 +39,7 @@
 #include <aiRecord.h>
 #include <aaoRecord.h>
 #include <aaiRecord.h>
+#include <aSubRecord.h>
 
 #include "fftwVersion.h"
 #include "fftwConnector.h"
@@ -406,6 +407,20 @@ init_record_write_arr(REC *prec)
     return status;
 }
 
+long
+init_double_array_asub(aSubRecord *prec)
+{
+    try {
+        dbCommon *pdbc = reinterpret_cast<dbCommon *>(prec);
+        const char *s = DBEntry(pdbc).info("fftw:CONFIG", "");
+        if (s[0] != '\0') {
+            prec->dpvt = parseLink(pdbc, s);
+        }
+    }
+    CATCH(__FUNCTION__)
+    return 0;
+}
+
 template<typename REC>
 long
 init_record_read_arr(REC *prec)
@@ -516,6 +531,31 @@ write_double_arr(REC *prec)
     CATCH(__FUNCTION__)
 }
 
+long
+write_double_array_asub(aSubRecord *prec)
+{
+    TRY
+    {
+        bool failed = true;
+        if (conn->sigtype == FFTWConnector::InputReal) {
+            if (prec->tpro > 1)
+                std::cerr << prec->name << ": set input (real) [" << prec->nea << "]" << std::endl;
+            conn->setNextInputValue(prec->a, prec->nea);
+            failed = false;
+        }
+        if (!failed && conn->inst->triggerSrc == conn) {
+            conn->setTimestamp(prec->time);
+            conn->trigger();
+        }
+        if (failed) {
+            (void) recGblSetSevr(prec, WRITE_ALARM, INVALID_ALARM);
+            return S_dev_badRequest;
+        }
+    }
+    CATCH(__FUNCTION__)
+    return 0;
+}
+
 template<typename REC>
 long
 read_double(REC *prec)
@@ -586,9 +626,20 @@ DEVSUPN(  devAIfftw,     ai,            get_iointr,     double,      read)
 DEVSUPI( devAAOfftw,    aao, write_arr, get_iointr, double_arr,     write)
 DEVSUPI( devAAIfftw,    aai,  read_arr, get_iointr, double_arr,      read)
 
-} // namespace
-
 #include <epicsExport.h>
+#include <registryFunction.h>
+
+static long
+FFTW_input(aSubRecord *prec)
+{
+    return write_double_array_asub(prec);
+}
+
+static long
+FFTW_init(aSubRecord *prec)
+{
+    return init_double_array_asub(prec);
+}
 
 extern "C" {
     epicsExportAddress(dset, devMBBOfftw);
@@ -596,4 +647,8 @@ extern "C" {
     epicsExportAddress(dset, devAIfftw);
     epicsExportAddress(dset, devAAOfftw);
     epicsExportAddress(dset, devAAIfftw);
+    epicsRegisterFunction(FFTW_input);
+    epicsRegisterFunction(FFTW_init);
 }
+
+} // namespace

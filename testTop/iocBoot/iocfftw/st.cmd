@@ -13,6 +13,8 @@ fftwtest_registerRecordDeviceDriver(pdbbase)
 dbLoadRecords("../../db/single.db","P=A1,R=:,TIME_N=128,FREQ_N=65")
 dbLoadRecords("../../db/single.db","P=A2,R=:,TIME_N=1024,FREQ_N=513")
 
+dbLoadRecords("../../db/single_asub.db","P=A3,R=:,TIME_N=1024,FREQ_N=513")
+
 iocInit()
 
 ## Start any sequence programs

@@ -6,6 +6,9 @@ device(ai, INST_IO, devAIfftw, "FFTW")
 device(aao, INST_IO, devAAOfftw, "FFTW")
 device(aai, INST_IO, devAAIfftw, "FFTW")
 
+function(FFTW_init)
+function(FFTW_input)
+
 registrar(fftwIocshRegister)
 
 # debugging noise level

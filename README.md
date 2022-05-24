@@ -54,7 +54,7 @@ IOC applications that use the module need to
 
 *   add an entry to the Device Support module in their `RELEASE.local` file
 *   include `fftw.dbd` when building the IOC's DBD file
-*   include `fftw` in the support libraries for the IOC binary.
+*   include `fftwSup` in the support libraries for the IOC binary.
 
 ## Documentation
 

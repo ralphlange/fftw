@@ -2,8 +2,8 @@
 
 DTYP = "FFTW".
 
-All record configurations use the instance name (macro `P` in the
-test/sample database) as first token in the INP/OUT link.
+All record configurations use the instance name as first token
+in the INP/OUT link.
 
 ## Parameters
 
@@ -16,7 +16,7 @@ Used with an mbbo record.
 
 ### sample-freq
 
-Sampling frequency of the input data [Hz].
+Sampling frequency of the input data \[Hz\].
 Used with an ao record.
 
 ## Inputs
@@ -35,8 +35,8 @@ Fetching the real part of the input data from a different array
 record.
 Using an aSub record.
 The record needs to set INAM = "FFTW_init", SNAM = "FFTW_input",
-FTA = "DOUBLE", NOA = <size of input array>, and an info item with
-the usual configuration (<instance name> input-real). 
+FTA = "DOUBLE", NOA = \<size of input array\>, and an info item with
+the usual configuration (\<instance name\> input-real). 
 
 ## Outputs
 
@@ -46,8 +46,9 @@ half of the input size plus one.
 of the input array.)
 
 Output records can set the link option "skipDC=y" to not include the
-first value. They can set "offset=<n>" to start a an arbitrary offset
-into the output array. ("skipDC=y" is equivalent to "offset=1".)
+first value. They can set "offset=\<n\>" to start a an arbitrary
+offset into the output array.
+("skipDC=y" is equivalent to "offset=1".)
 
 The records of outputs are driven by the instance and must be set
 to SCAN = "I/O Intr".
@@ -75,7 +76,7 @@ Used with an aai record of type DOUBLE.
 ### output-fscale
 
 Frequency scale of the output data. Contains the x-axis values
-[Hz] for plotting the output arrays.
+\[Hz\] for plotting the output arrays.
 Used with an aai record of type DOUBLE.
 Frequency scales matching output records with skipDC or offset
 options can be obtained by using the same link option.
@@ -89,5 +90,5 @@ the size of the input.
 
 ### exectime
 
-Execution time of the last transformation [s].
+Execution time of the last transformation \[s\].
 Used with an ai record.
